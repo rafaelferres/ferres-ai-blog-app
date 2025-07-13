@@ -7,7 +7,7 @@ import { Footer } from "@/components/ui/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getCategories } from "@/actions/categories";
 import { GoogleTagManager } from "@next/third-parties/google";
-import AutoPushNotification from "@/components/auto-push-notification";
+import SendPulseNotification from "@/components/sendpulse-notification";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -87,6 +87,11 @@ export default async function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
+        <script
+          charSet="UTF-8"
+          src="//web.webpushs.com/js/push/56f5dabfb60218d5c1e60952141a958b_1.js"
+          async
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -96,7 +101,7 @@ export default async function RootLayout({
           <Header />
           <NavbarSpacer>{children}</NavbarSpacer>
           <Footer categories={categories as any} />
-          <AutoPushNotification />
+          <SendPulseNotification />
         </ThemeProvider>
       </body>
     </html>

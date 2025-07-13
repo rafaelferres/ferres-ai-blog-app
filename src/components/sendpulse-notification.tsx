@@ -4,37 +4,70 @@ import { useState, useEffect } from "react";
 import { X, Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function AutoPushNotification() {
+// Extensão do Window para incluir SendPulse
+declare global {
+  interface Window {
+    sendpulse_webpush?: {
+      subscribe: () => void;
+      unsubscribe: () => void;
+      isSubscribed: () => boolean;
+      getSubscriptionId: () => string | null;
+      init: () => void;
+    };
+  }
+}
+
+export default function SendPulseNotification() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [vapidPublicKey, setVapidPublicKey] = useState<string | null>(null);
+  const [sendPulseLoaded, setSendPulseLoaded] = useState(false);
 
   useEffect(() => {
-    // Verificar se deve mostrar a solicitação
-    checkShouldShowNotification();
-    loadVapidKey();
+    // Verificar se o SendPulse foi carregado
+    const checkSendPulseLoaded = () => {
+      if (window.sendpulse_webpush) {
+        setSendPulseLoaded(true);
+        window.sendpulse_webpush.init();
+
+        // Verificar se já está inscrito
+        window.sendpulse_webpush.isSubscribed();
+
+        // Verificar se deve mostrar a solicitação
+        checkShouldShowNotification();
+      } else {
+        // Tentar novamente em 500ms
+        setTimeout(checkSendPulseLoaded, 500);
+      }
+    };
+
+    checkSendPulseLoaded();
   }, []);
 
   const checkShouldShowNotification = () => {
     if (typeof window === "undefined") return;
 
-    // Verificar suporte
-    const isSupported = "serviceWorker" in navigator && "PushManager" in window;
-    if (!isSupported) return;
+    // Verificar suporte a notificações
+    if (!("Notification" in window)) return;
 
     // Verificar se já foi perguntado antes
-    const hasAsked = localStorage.getItem("push-notification-asked");
+    const hasAsked = localStorage.getItem("sendpulse-notification-asked");
     if (hasAsked === "true") return;
 
     // Verificar se já tem permissão
     if (Notification.permission === "granted") {
-      localStorage.setItem("push-notification-asked", "true");
+      localStorage.setItem("sendpulse-notification-asked", "true");
       return;
     }
 
     // Verificar se foi negado
     if (Notification.permission === "denied") {
-      localStorage.setItem("push-notification-asked", "true");
+      localStorage.setItem("sendpulse-notification-asked", "true");
+      return;
+    }
+
+    // Verificar se já está inscrito
+    if (window.sendpulse_webpush?.isSubscribed()) {
+      localStorage.setItem("sendpulse-notification-asked", "true");
       return;
     }
 
@@ -44,75 +77,26 @@ export default function AutoPushNotification() {
     }, 3000); // 3 segundos após carregar a página
   };
 
-  const loadVapidKey = async () => {
-    try {
-      const response = await fetch("/api/push-notifications/vapid-key");
-      const data = await response.json();
-
-      if (data.success) {
-        setVapidPublicKey(data.vapidPublicKey);
-      }
-    } catch (error) {
-      console.error("❌ Erro ao carregar VAPID key:", error);
-    }
-  };
-
-  const urlBase64ToUint8Array = (base64String: string) => {
-    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding)
-      .replace(/-/g, "+")
-      .replace(/_/g, "/");
-
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  };
-
   const handleAccept = async () => {
-    if (!vapidPublicKey) {
-      console.error("VAPID key não carregada");
+    if (!sendPulseLoaded || !window.sendpulse_webpush) {
+      console.error("SendPulse não carregado ainda");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // Solicitar permissão
-      const permission = await Notification.requestPermission();
+      // Inscrever usando SendPulse
+      await window.sendpulse_webpush.subscribe();
 
-      if (permission === "granted") {
-        // Registrar service worker
-        const swPath =
-          process.env.NODE_ENV === "development" ? "/sw-dev.js" : "/sw.js";
-        const registration = await navigator.serviceWorker.register(swPath);
-        await registration.update();
-        await navigator.serviceWorker.ready;
+      // Verificar se foi inscrito com sucesso
+      const subscribed = window.sendpulse_webpush.isSubscribed();
 
-        // Criar subscription
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
-        });
+      if (subscribed) {
+        console.log("✅ Notificações ativadas com sucesso!");
 
-        // Enviar subscription para o servidor
-        const response = await fetch("/api/push-notifications/subscribe", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ subscription: subscription.toJSON() }),
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          console.log("✅ Notificações ativadas com sucesso!");
-
-          // Mostrar notificação de confirmação
+        // Mostrar notificação de confirmação se permitido
+        if (Notification.permission === "granted") {
           new Notification("🎉 Notificações ativadas!", {
             body: "Você receberá notificações quando novos artigos forem publicados.",
             icon: "/icon-192x192.fw.png",
@@ -124,13 +108,13 @@ export default function AutoPushNotification() {
     } finally {
       setIsLoading(false);
       setIsVisible(false);
-      localStorage.setItem("push-notification-asked", "true");
+      localStorage.setItem("sendpulse-notification-asked", "true");
     }
   };
 
   const handleDecline = () => {
     setIsVisible(false);
-    localStorage.setItem("push-notification-asked", "true");
+    localStorage.setItem("sendpulse-notification-asked", "true");
   };
 
   const handleClose = () => {
@@ -138,7 +122,7 @@ export default function AutoPushNotification() {
     // Não marcar como perguntado, vai aparecer novamente na próxima visita
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || !sendPulseLoaded) return null;
 
   return (
     <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-2 duration-300">

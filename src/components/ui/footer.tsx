@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Category } from "@/types/strapi";
 import { useToast } from "./toast";
+import { NotificationToggle } from "./notification-toggle";
 
 interface FooterProps {
   categories: Category[];
@@ -126,31 +127,38 @@ export function Footer({ categories }: FooterProps) {
 
           {/* Bottom Bar */}
           <div className="mt-8 pt-8 border-t border-border">
-            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
               <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                 <span>© 2025 Ferres. Feito com</span>
                 <Heart className="w-4 h-4 text-red-500" />
                 <span>usando Next.js e Tailwind CSS.</span>
               </div>
-              <div className="flex items-center space-x-6">
-                <a
-                  href="/privacy"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Privacidade
-                </a>
-                <a
-                  href="/terms"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Termos
-                </a>
-                <a
-                  href="/cookies"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Cookies
-                </a>
+
+              <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                {/* Botão de Notificações */}
+                <NotificationToggle />
+
+                {/* Links */}
+                <div className="flex items-center space-x-6">
+                  <a
+                    href="/privacy"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Privacidade
+                  </a>
+                  <a
+                    href="/terms"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Termos
+                  </a>
+                  <a
+                    href="/cookies"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Cookies
+                  </a>
+                </div>
               </div>
             </div>
           </div>

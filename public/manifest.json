@@ -1,0 +1,32 @@
+{
+  "name": "Ferres AI Blog",
+  "short_name": "Ferres Blog",
+  "description": "Blog sobre tecnologia, IA e desenvolvimento",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192x192.fw.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.fw.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-192x192.fw.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["technology", "blog", "news"],
+  "lang": "pt-BR",
+  "dir": "ltr"
+} 

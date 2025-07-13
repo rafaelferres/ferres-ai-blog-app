@@ -3,6 +3,7 @@ import { Newsletter } from "@/components/ui/newsletter";
 import { SubHeader } from "@/components/home/sub-header";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { HomeClient } from "@/components/home/home-client";
+import { AddToHomeScreen } from "@/components/ui/add-to-home-screen";
 
 export default async function HomePage() {
   const { data: articles, meta } = await getArticlesPaginated(9, 1);
@@ -47,6 +48,9 @@ export default async function HomePage() {
       <div className="relative z-10">
         <Newsletter />
       </div>
+
+      {/* PWA Add to Home Screen */}
+      <AddToHomeScreen />
     </div>
   );
 }

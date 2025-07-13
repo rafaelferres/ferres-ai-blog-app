@@ -22,6 +22,22 @@ export const metadata: Metadata = {
   title: "Ferres - Blog sobre Tecnologia e Inovação",
   description:
     "Descubra as últimas notícias e insights sobre tecnologia e inovação no mundo dos negócios.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Ferres Blog",
+    startupImage: [
+      {
+        url: "/icon-192x192.png",
+        media:
+          "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)",
+      },
+    ],
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     title: "Ferres - Blog sobre Tecnologia e Inovação",
     description:
@@ -42,6 +58,15 @@ export const metadata: Metadata = {
       "Descubra as últimas notícias e insights sobre tecnologia e inovação no mundo dos negócios.",
     images: ["https://ferres.io/og-image.fw.png"],
   },
+  icons: {
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    icon: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
 };
 
 export default async function RootLayout({
@@ -52,7 +77,16 @@ export default async function RootLayout({
   const categories = await getCategories();
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        <meta name="theme-color" content="#000000" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Ferres Blog" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

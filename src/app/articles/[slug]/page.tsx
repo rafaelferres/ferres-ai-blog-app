@@ -17,6 +17,7 @@ import { processTags } from "@/lib/utils";
 marked.setOptions({
   breaks: true,
   gfm: true,
+  async: false,
 });
 
 export default async function ArticlePage({
@@ -157,7 +158,7 @@ export default async function ArticlePage({
                             key={index}
                             className="mb-6"
                             dangerouslySetInnerHTML={{
-                              __html: marked(block.body),
+                              __html: marked.parse(block.body) as string,
                             }}
                           />
                         );

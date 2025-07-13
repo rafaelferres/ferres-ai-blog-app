@@ -145,7 +145,7 @@ export const getArticleBySlugAddView = async (slug: string) => {
   try {
     const { data } = await strapiClient.collection("articles").find({
       filters: { slug: { $eq: slug } },
-      populate: ["cover", "author", "category"],
+      populate: ["cover", "author", "category", "blocks"],
     });
 
     if (!data || data.length === 0) {

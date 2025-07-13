@@ -1,7 +1,32 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "1337",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "via.placeholder.com",
+      },
+    ],
+  },
+  env: {
+    NEXT_PUBLIC_STRAPI_URL: process.env.NEXT_PUBLIC_STRAPI_URL,
+  },
 };
 
 export default nextConfig;

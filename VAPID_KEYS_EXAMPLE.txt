@@ -1,0 +1,14 @@
+# Copie estas variáveis para o seu arquivo .env.local
+
+# VAPID Keys - Gere usando o comando abaixo:
+# node -e "const webpush = require('web-push'); const keys = webpush.generateVAPIDKeys(); console.log('VAPID_PUBLIC_KEY=' + keys.publicKey); console.log('VAPID_PRIVATE_KEY=' + keys.privateKey);"
+
+VAPID_PUBLIC_KEY=your_vapid_public_key_here
+VAPID_PRIVATE_KEY=your_vapid_private_key_here
+VAPID_SUBJECT=mailto:your-email@example.com
+
+# Webhook Security - Gere um token seguro
+STRAPI_WEBHOOK_SECRET=your_webhook_secret_here
+
+# Strapi Configuration (se ainda não tiver)
+NEXT_PUBLIC_STRAPI_URL=http://localhost:1337 

@@ -7,6 +7,7 @@ import { Footer } from "@/components/ui/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getCategories } from "@/actions/categories";
 import { GoogleTagManager } from "@next/third-parties/google";
+import AutoPushNotification from "@/components/auto-push-notification";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -95,6 +96,7 @@ export default async function RootLayout({
           <Header />
           <NavbarSpacer>{children}</NavbarSpacer>
           <Footer categories={categories as any} />
+          <AutoPushNotification />
         </ThemeProvider>
       </body>
     </html>

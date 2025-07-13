@@ -248,11 +248,22 @@ class StrapiPushNotificationService {
     body: string,
     data?: any
   ): Promise<boolean> {
-    if (!process.env.VAPID_PRIVATE_KEY) {
-      throw new Error("VAPID_PRIVATE_KEY não configurada");
+    if (!process.env.VAPID_PRIVATE_KEY || !process.env.VAPID_PUBLIC_KEY) {
+      throw new Error("VAPID keys não configuradas");
     }
 
     try {
+      // Importar e configurar web-push
+      const webpush = await import("web-push");
+
+      const vapidSubject =
+        process.env.VAPID_SUBJECT || "mailto:your-email@example.com";
+      webpush.setVapidDetails(
+        vapidSubject,
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+      );
+
       const pushSubscription = {
         endpoint: subscription.endpoint,
         keys: {
@@ -261,39 +272,31 @@ class StrapiPushNotificationService {
         },
       };
 
-      const response = await fetch("https://fcm.googleapis.com/fcm/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `key=${process.env.VAPID_PRIVATE_KEY}`,
-        },
-        body: JSON.stringify({
-          to: pushSubscription.endpoint,
-          notification: {
-            title,
-            body,
-          },
-          data: data || {},
-        }),
+      const payload = JSON.stringify({
+        title,
+        body,
+        icon: "/icon-192x192.fw.png",
+        badge: "/icon-192x192.fw.png",
+        data: data || {},
       });
 
-      if (!response.ok) {
-        console.error("Erro ao enviar notificação:", response.status);
-        // Marcar como inválida se erro 410 (Gone)
-        if (response.status === 410) {
-          await this.markSubscriptionAsInvalid(subscription.endpoint);
-        }
-        return false;
-      }
+      await webpush.sendNotification(pushSubscription, payload);
 
       // Atualizar lastUsed
       await this.updateSubscription(subscription.id, {
         lastUsed: new Date().toISOString(),
       });
 
+      console.log(`✅ Notificação enviada para: ${subscription.endpoint}`);
       return true;
     } catch (error) {
       console.error("Erro ao enviar notificação:", error);
+
+      // Se o erro for 410 (Gone), marcar como inválida
+      if (error instanceof Error && error.message.includes("410")) {
+        await this.markSubscriptionAsInvalid(subscription.endpoint);
+      }
+
       return false;
     }
   }

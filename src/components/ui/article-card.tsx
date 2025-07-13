@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { StrapiImage } from "@/components/ui/strapi-image";
 import { Calendar, User, ArrowRight } from "lucide-react";
 import { processTags } from "@/lib/utils";
 
@@ -44,7 +44,7 @@ export function ArticleCard({ article, showTags = false }: ArticleCardProps) {
       {/* Article Image */}
       {article.cover && (
         <div className="relative h-48 overflow-hidden">
-          <Image
+          <StrapiImage
             src={article.cover.url}
             alt={article.cover.alternativeText || article.title}
             fill

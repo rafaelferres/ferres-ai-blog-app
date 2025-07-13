@@ -1,25 +1,11 @@
-import { getArticlePagination } from "@/actions/articles";
+import { getArticlesPaginated } from "@/actions/articles";
 import { Newsletter } from "@/components/ui/newsletter";
 import { SubHeader } from "@/components/home/sub-header";
 import { BackgroundBeams } from "@/components/ui/background-beams";
-import { HoverEffect } from "@/components/ui/card-hover-effect";
+import { HomeClient } from "@/components/home/home-client";
 
 export default async function HomePage() {
-  const articles = await getArticlePagination(12, 1);
-
-  // Transformar os artigos para o formato do HoverEffect
-  const hoverItems = articles.map((article: any) => ({
-    title: article.title,
-    description: article.excerpt || "Clique para ler mais...",
-    link: `/articles/${article.slug}`,
-    image: article.cover?.url ? `${article.cover.url}` : undefined,
-    category: article.category?.name,
-    date: new Date(article.createdAt).toLocaleDateString("pt-BR", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }),
-  }));
+  const { data: articles, meta } = await getArticlesPaginated(9, 1);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -53,7 +39,7 @@ export default async function HomePage() {
               </p>
             </div>
           ) : (
-            <HoverEffect items={hoverItems} />
+            <HomeClient initialArticles={articles} initialMeta={meta} />
           )}
         </div>
       </section>

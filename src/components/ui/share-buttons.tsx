@@ -235,7 +235,7 @@ export function ShareButtons({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="absolute top-full right-0 mt-2 bg-background border border-border rounded-lg shadow-lg p-2 z-50 min-w-[200px]"
+              className="absolute top-full left-0 sm:left-auto sm:right-0 mt-2 bg-background border border-border rounded-lg shadow-lg p-2 z-50 min-w-[200px]"
             >
               <motion.div className="space-y-1">
                 <motion.button

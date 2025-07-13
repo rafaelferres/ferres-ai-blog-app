@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { LoadingSpinner } from "./loading-spinner";
 
 interface PaginationProps {
   currentPage: number;
@@ -18,6 +20,12 @@ export function Pagination({
 }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Reset loading state when page changes
+  useEffect(() => {
+    setIsLoading(false);
+  }, [currentPage]);
 
   const createPageURL = (page: number) => {
     const params = new URLSearchParams(searchParams);
@@ -26,6 +34,9 @@ export function Pagination({
   };
 
   const goToPage = (page: number) => {
+    if (page === currentPage || isLoading) return;
+
+    setIsLoading(true);
     router.push(createPageURL(page));
   };
 
@@ -46,7 +57,8 @@ export function Pagination({
         <button
           key={1}
           onClick={() => goToPage(1)}
-          className="px-3 py-2 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
+          disabled={isLoading}
+          className="px-3 py-2 text-sm rounded-lg border border-border hover:bg-muted transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
         >
           1
         </button>
@@ -67,7 +79,8 @@ export function Pagination({
         <button
           key={i}
           onClick={() => goToPage(i)}
-          className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+          disabled={isLoading}
+          className={`px-3 py-2 text-sm rounded-lg border transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent ${
             i === currentPage
               ? "bg-primary text-primary-foreground border-primary"
               : "border-border hover:bg-muted"
@@ -92,7 +105,8 @@ export function Pagination({
         <button
           key={totalPages}
           onClick={() => goToPage(totalPages)}
-          className="px-3 py-2 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
+          disabled={isLoading}
+          className="px-3 py-2 text-sm rounded-lg border border-border hover:bg-muted transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
         >
           {totalPages}
         </button>
@@ -105,26 +119,41 @@ export function Pagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-12">
-      <button
-        onClick={() => goToPage(currentPage - 1)}
-        disabled={!hasPreviousPage}
-        className="flex items-center gap-1 px-3 py-2 text-sm rounded-lg border border-border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-      >
-        <ChevronLeft className="w-4 h-4" />
-        Anterior
-      </button>
+    <div className="flex flex-col items-center gap-4 mt-12">
+      {/* Loading indicator */}
+      {isLoading && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <LoadingSpinner size="sm" variant="minimal" />
+          Carregando próxima página...
+        </div>
+      )}
 
-      <div className="flex items-center gap-1">{renderPageNumbers()}</div>
-
-      <button
-        onClick={() => goToPage(currentPage + 1)}
-        disabled={!hasNextPage}
-        className="flex items-center gap-1 px-3 py-2 text-sm rounded-lg border border-border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+      {/* Pagination controls */}
+      <div
+        className={`flex items-center gap-2 transition-opacity duration-300 ${
+          isLoading ? "opacity-50" : "opacity-100"
+        }`}
       >
-        Próxima
-        <ChevronRight className="w-4 h-4" />
-      </button>
+        <button
+          onClick={() => goToPage(currentPage - 1)}
+          disabled={!hasPreviousPage || isLoading}
+          className="flex items-center gap-1 px-3 py-2 text-sm rounded-lg border border-border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent cursor-pointer"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Anterior
+        </button>
+
+        <div className="flex items-center gap-1">{renderPageNumbers()}</div>
+
+        <button
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={!hasNextPage || isLoading}
+          className="flex items-center gap-1 px-3 py-2 text-sm rounded-lg border border-border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent cursor-pointer"
+        >
+          Próxima
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }

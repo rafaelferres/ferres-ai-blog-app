@@ -95,12 +95,20 @@ export default function CommunityPage() {
             mesmo.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium">
+            <Link
+              href="https://discord.gg/sKSxQWEVV5"
+              target="_blank"
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+            >
               Entrar no Discord
-            </button>
-            <button className="px-6 py-3 border border-border text-foreground rounded-lg hover:bg-muted transition-colors font-medium">
-              Seguir no Twitter
-            </button>
+            </Link>
+            <Link
+              href="https://www.instagram.com/ferres.io"
+              target="_blank"
+              className="px-6 py-3 border border-border text-foreground rounded-lg hover:bg-muted transition-colors font-medium"
+            >
+              Seguir no Instagram
+            </Link>
           </div>
         </div>
 

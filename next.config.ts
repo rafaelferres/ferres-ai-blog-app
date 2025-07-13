@@ -46,7 +46,12 @@ export default withPWA({
   register: true,
   skipWaiting: true,
   sw: "sw.js",
-  buildExcludes: [/middleware-manifest\.json$/],
+
+  buildExcludes: [
+    /middleware-manifest\.json$/,
+    /app-build-manifest\.json$/,
+    /build-manifest\.json$/,
+  ],
   additionalManifestEntries: [
     {
       url: "/sw-push.js",

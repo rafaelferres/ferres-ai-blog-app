@@ -24,7 +24,13 @@ export function NotificationToggle() {
     } catch {
       // Se não estiver registrado, registrar agora
       console.log("🔧 Registrando service worker...");
-      const registration = await navigator.serviceWorker.register("/sw.js");
+
+      // Usar service worker de desenvolvimento em desenvolvimento
+      const swPath =
+        process.env.NODE_ENV === "development" ? "/sw-dev.js" : "/sw.js";
+      console.log(`🔧 Usando service worker: ${swPath}`);
+
+      const registration = await navigator.serviceWorker.register(swPath);
       await registration.update();
       await navigator.serviceWorker.ready;
       console.log("✅ Service worker registrado com sucesso");

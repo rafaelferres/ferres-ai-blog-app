@@ -86,7 +86,9 @@ export default function AutoPushNotification() {
 
       if (permission === "granted") {
         // Registrar service worker
-        const registration = await navigator.serviceWorker.register("/sw.js");
+        const swPath =
+          process.env.NODE_ENV === "development" ? "/sw-dev.js" : "/sw.js";
+        const registration = await navigator.serviceWorker.register(swPath);
         await registration.update();
         await navigator.serviceWorker.ready;
 

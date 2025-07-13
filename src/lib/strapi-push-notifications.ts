@@ -238,7 +238,7 @@ class StrapiPushNotificationService {
   async markSubscriptionAsInvalid(endpoint: string): Promise<void> {
     const subscription = await this.findSubscriptionByEndpoint(endpoint);
     if (subscription) {
-      await this.updateSubscription(subscription.id, {
+      await this.updateSubscription(subscription.documentId, {
         subscriptionStatus: "invalid",
       });
     }

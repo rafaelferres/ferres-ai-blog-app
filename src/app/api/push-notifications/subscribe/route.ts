@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     if (existingSubscription) {
       // Atualizar subscription existente
       result = await strapiPushService.updateSubscription(
-        existingSubscription.id,
+        existingSubscription.documentId,
         {
           userAgent,
           userId,

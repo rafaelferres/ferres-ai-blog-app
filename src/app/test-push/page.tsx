@@ -64,23 +64,16 @@ export default function TestPushPage() {
     try {
       setStatus("Enviando notificação de teste...");
 
-      // Test with custom notification
-      const response = await fetch("/api/webhook/strapi", {
+      // Test with custom notification using the test endpoint
+      const response = await fetch("/api/test-notification", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            process.env.NEXT_PUBLIC_STRAPI_WEBHOOK_SECRET || "test-secret"
-          }`,
         },
         body: JSON.stringify({
-          event: "entry.publish",
-          model: "article",
-          entry: {
-            title: "Artigo de Teste das Notificações!",
-            slug: "teste-notificacao",
-            categories: [{ name: "Tecnologia", slug: "tecnologia" }],
-          },
+          title: "Artigo de Teste das Notificações!",
+          slug: "teste-notificacao",
+          categories: ["Tecnologia"],
         }),
       });
 
@@ -88,7 +81,10 @@ export default function TestPushPage() {
         const result = await response.json();
         setStatus(`Notificação enviada! ${JSON.stringify(result)}`);
       } else {
-        setStatus(`Erro ao enviar: ${response.status} ${response.statusText}`);
+        const errorResult = await response.json();
+        setStatus(
+          `Erro ao enviar: ${response.status} ${response.statusText} - ${errorResult.message}`
+        );
       }
     } catch (error) {
       setStatus(`Erro: ${error}`);
@@ -185,7 +181,7 @@ export default function TestPushPage() {
               disabled={!subscription}
               className="bg-blue-500 hover:bg-blue-600"
             >
-              Enviar Notificação via Webhook
+              Enviar Notificação de Teste
             </Button>
             <Button
               onClick={sendDirectNotification}
@@ -202,11 +198,14 @@ export default function TestPushPage() {
           <ol className="list-decimal list-inside space-y-1 text-sm">
             <li>Primeiro, solicite permissão para notificações</li>
             <li>Depois, inscreva-se para receber notificações</li>
+            <li>Teste a notificação direta (mostra via service worker)</li>
             <li>
-              Teste a notificação direta (deve mostrar conteúdo personalizado)
+              Teste a notificação de teste (envia via backend - deve ser
+              personalizada)
             </li>
             <li>
-              Teste a notificação via webhook (simula uma notificação real)
+              Se ainda aparecer notificação genérica, faça hard refresh
+              (Ctrl+Shift+R)
             </li>
           </ol>
         </div>

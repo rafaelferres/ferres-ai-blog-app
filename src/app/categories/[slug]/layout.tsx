@@ -20,6 +20,26 @@ export async function generateMetadata({
     title: `Ferres - ${category.name}`,
     description:
       category.description || `Artigos da categoria ${category.name}`,
+    openGraph: {
+      title: `Ferres - ${category.name}`,
+      description:
+        category.description || `Artigos da categoria ${category.name}`,
+      images: [
+        {
+          url: "https://ferres.io/og-image.fw.png",
+          width: 1200,
+          height: 630,
+          alt: `Ferres - ${category.name}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Ferres - ${category.name}`,
+      description:
+        category.description || `Artigos da categoria ${category.name}`,
+      images: ["https://ferres.io/og-image.fw.png"],
+    },
   };
 }
 

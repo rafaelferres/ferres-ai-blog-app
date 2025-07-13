@@ -22,6 +22,26 @@ export const metadata: Metadata = {
   title: "Ferres - Blog sobre Tecnologia e Inovação",
   description:
     "Descubra as últimas notícias e insights sobre tecnologia e inovação no mundo dos negócios.",
+  openGraph: {
+    title: "Ferres - Blog sobre Tecnologia e Inovação",
+    description:
+      "Descubra as últimas notícias e insights sobre tecnologia e inovação no mundo dos negócios.",
+    images: [
+      {
+        url: "https://ferres.io/og-image.fw.png",
+        width: 1200,
+        height: 630,
+        alt: "Ferres - Blog sobre Tecnologia e Inovação",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ferres - Blog sobre Tecnologia e Inovação",
+    description:
+      "Descubra as últimas notícias e insights sobre tecnologia e inovação no mundo dos negócios.",
+    images: ["https://ferres.io/og-image.fw.png"],
+  },
 };
 
 export default async function RootLayout({

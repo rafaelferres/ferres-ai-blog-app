@@ -2,11 +2,13 @@
 
 import { strapiClient } from "@/lib/strapi";
 import { Tag, StrapiData } from "@/types/strapi";
-
+import { unstable_noStore as noStore } from "next/cache";
 /**
  * Busca todas as tags
  */
 export async function getTags(params?: any) {
+  noStore();
+
   try {
     const response = await strapiClient.collection("tags").find({
       populate: ["posts"],
@@ -27,6 +29,8 @@ export async function getTags(params?: any) {
 export async function getTagBySlug(
   slug: string
 ): Promise<StrapiData<Tag> | null> {
+  noStore();
+
   try {
     const response = await strapiClient.collection("tags").find({
       filters: { slug: { $eq: slug } },
@@ -49,6 +53,8 @@ export async function getTagBySlug(
 export async function getTagById(
   documentId: string
 ): Promise<StrapiData<Tag> | null> {
+  noStore();
+
   try {
     const response = await strapiClient.collection("tags").findOne(documentId, {
       populate: ["posts"],
@@ -67,6 +73,8 @@ export async function getTagById(
 export async function getTagsWithPostCount(): Promise<
   Array<StrapiData<Tag> & { postCount: number }>
 > {
+  noStore();
+
   try {
     const response = await strapiClient.collection("tags").find({
       populate: ["posts"],
@@ -91,6 +99,8 @@ export async function getTagsWithPostCount(): Promise<
 export async function getPopularTags(
   limit: number = 10
 ): Promise<Array<StrapiData<Tag> & { postCount: number }>> {
+  noStore();
+
   try {
     const response = await strapiClient.collection("tags").find({
       populate: ["posts"],

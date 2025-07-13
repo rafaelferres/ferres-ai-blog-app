@@ -1,8 +1,11 @@
 "use server";
 
 import { strapiClient } from "@/lib/strapi";
+import { unstable_noStore as noStore } from "next/cache";
 
 export async function getArticles() {
+  noStore();
+
   try {
     const { data } = await strapiClient.collection("articles").find({
       populate: ["cover", "author", "category"],
@@ -15,7 +18,34 @@ export async function getArticles() {
   }
 }
 
+export const getArticleByCategory = async (
+  category: string,
+  pageSize: number = 1,
+  page: number = 1
+) => {
+  noStore();
+
+  try {
+    const { data } = await strapiClient.collection("articles").find({
+      filters: { category: { name: { $eq: category } } },
+      populate: ["cover", "author", "category"],
+      sort: ["createdAt:desc"],
+      pagination: {
+        pageSize: pageSize,
+        page: page,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching articles by category:", error);
+    return [];
+  }
+};
+
 export const getArticlePagination = async (pageSize: number, page: number) => {
+  noStore();
+
   try {
     const { data } = await strapiClient.collection("articles").find({
       populate: ["cover", "author", "category"],
@@ -38,6 +68,8 @@ export const getArticlesPaginated = async (
   search?: string,
   category?: string
 ) => {
+  noStore();
+
   try {
     const filters: any = {};
 
@@ -108,6 +140,8 @@ export const getArticlesPaginated = async (
 };
 
 export const getArticleBySlug = async (slug: string) => {
+  noStore();
+
   try {
     const { data } = await strapiClient.collection("articles").find({
       filters: {
@@ -134,6 +168,8 @@ export const getRelatedArticles = async (
   categoryId?: string,
   limit: number = 3
 ) => {
+  noStore();
+
   try {
     const filters: any = {
       id: {
@@ -167,13 +203,15 @@ export const getRelatedArticles = async (
 };
 
 export const getPopularArticles = async (limit: number = 5) => {
+  noStore();
+
   try {
     // Tenta primeiro com visit_count, se falhar usa apenas createdAt
     let data;
     try {
       const response = await strapiClient.collection("articles").find({
         populate: ["cover", "author", "category"],
-        sort: ["visit_count:desc", "createdAt:desc"],
+        sort: ["visit_weekly_count:desc", "createdAt:desc"],
         pagination: {
           pageSize: limit,
           page: 1,
@@ -182,9 +220,9 @@ export const getPopularArticles = async (limit: number = 5) => {
       data = response.data;
     } catch {
       console.warn(
-        "visit_count field not available, falling back to createdAt sort"
+        "visit_weekly_count field not available, falling back to createdAt sort"
       );
-      // Fallback para ordenação apenas por data se visit_count não existir
+      // Fallback para ordenação apenas por data se visit_weekly_count não existir
       const response = await strapiClient.collection("articles").find({
         populate: ["cover", "author", "category"],
         sort: ["createdAt:desc"],
@@ -204,6 +242,8 @@ export const getPopularArticles = async (limit: number = 5) => {
 };
 
 export const getRecentArticles = async (limit: number = 5) => {
+  noStore();
+
   try {
     const { data } = await strapiClient.collection("articles").find({
       populate: ["cover", "author", "category"],

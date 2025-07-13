@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "via.placeholder.com",
       },
+      {
+        protocol: "https",
+        hostname: "ijurxirqlhufi5mp.public.blob.vercel-storage.com",
+      },
     ],
   },
   env: {

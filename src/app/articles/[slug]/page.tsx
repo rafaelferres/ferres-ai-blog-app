@@ -118,7 +118,7 @@ export default async function ArticlePage({
             {article.cover && (
               <div className="relative w-full h-96 md:h-[500px] rounded-xl overflow-hidden mb-8">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${article.cover.url}`}
+                  src={`${article.cover.url}`}
                   alt={article.cover.alternativeText || article.title}
                   fill
                   className="object-cover"
@@ -149,7 +149,7 @@ export default async function ArticlePage({
                           <div key={index} className="my-8">
                             <div className="relative w-full h-96 rounded-xl overflow-hidden">
                               <Image
-                                src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${block.file.url}`}
+                                src={`${block.file.url}`}
                                 alt={
                                   block.file.alternativeText ||
                                   "Imagem do artigo"

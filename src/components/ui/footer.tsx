@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Github, Twitter, Linkedin, Mail, Heart } from "lucide-react";
+import { Github, Linkedin, Heart, Instagram } from "lucide-react";
 import { Category } from "@/types/strapi";
+import { IconBrandTiktok } from "@tabler/icons-react";
 
 interface FooterProps {
   categories: Category[];
@@ -27,7 +28,7 @@ export function Footer({ categories }: FooterProps) {
             </p>
             <div className="flex space-x-4">
               <Link
-                href="https://github.com"
+                href="https://github.com/rafaelferres"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -35,15 +36,15 @@ export function Footer({ categories }: FooterProps) {
                 <Github className="w-5 h-5" />
               </Link>
               <Link
-                href="https://twitter.com"
+                href="https://www.instagram.com/ferres.ia/"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Twitter className="w-5 h-5" />
+                <Instagram className="w-5 h-5" />
               </Link>
               <Link
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/rafael-ferres/"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -51,10 +52,10 @@ export function Footer({ categories }: FooterProps) {
                 <Linkedin className="w-5 h-5" />
               </Link>
               <Link
-                href="mailto:contato@ferres.com"
+                href="https://www.tiktok.com/@ferres.ia"
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
-                <Mail className="w-5 h-5" />
+                <IconBrandTiktok className="w-5 h-5" />
               </Link>
             </div>
           </div>

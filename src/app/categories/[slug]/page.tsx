@@ -102,9 +102,7 @@ export default async function CategoryPage({
     title: article.title,
     description: article.excerpt || "Clique para ler mais...",
     link: `/articles/${article.slug}`,
-    image: article.cover?.url
-      ? `${process.env.NEXT_PUBLIC_STRAPI_URL}${article.cover.url}`
-      : undefined,
+    image: article.cover?.url ? `${article.cover.url}` : undefined,
     category: article.category?.name,
     date: new Date(article.createdAt).toLocaleDateString("pt-BR", {
       year: "numeric",

@@ -1,6 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getArticlePagination } from "@/actions/articles";
+import {
+  getArticleByCategory,
+  getArticlePagination,
+  getPopularArticles,
+} from "@/actions/articles";
 import moment from "moment-timezone";
 import { Calendar, User } from "lucide-react";
 import { SubHeaderClient } from "./sub-header-client";
@@ -26,7 +30,8 @@ const formatDate = (dateString: string) => {
 
 export const SubHeader = async () => {
   try {
-    const articles = await getArticlePagination(3, 1);
+    const articles = await getArticleByCategory("AI", 4, 1);
+    const popularArticles = await getPopularArticles(5);
 
     if (!articles || articles.length === 0) {
       return null;
@@ -40,7 +45,7 @@ export const SubHeader = async () => {
             <div className="lg:col-span-2 relative rounded-lg overflow-hidden shadow-lg bg-card group cursor-pointer h-[200px] lg:h-auto border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group">
               <Link href={`/articles/${articles[0].slug}`}>
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${articles[0].cover.url}`}
+                  src={`${articles[0].cover.url}`}
                   alt="Post-it notes"
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -87,7 +92,7 @@ export const SubHeader = async () => {
                 >
                   <Link href={`/articles/${card.slug}`}>
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${card.cover.url}`}
+                      src={`${card.cover.url}`}
                       alt={card.title}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -136,13 +141,13 @@ export const SubHeader = async () => {
                 </h2>
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                   <span className="text-primary font-bold text-sm">
-                    {articles.length}
+                    {popularArticles.length}
                   </span>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4 flex-1">
-                {articles.map((headline, idx) => (
+                {popularArticles.map((headline, idx) => (
                   <Link
                     key={idx}
                     href={`/articles/${headline.slug}`}

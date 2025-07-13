@@ -2,11 +2,14 @@
 
 import { strapiClient } from "@/lib/strapi";
 import { User, StrapiData } from "@/types/strapi";
+import { unstable_noStore as noStore } from "next/cache";
 
 /**
  * Busca todos os usuários/autores
  */
 export async function getUsers(params?: any) {
+  noStore();
+
   try {
     const response = await strapiClient.collection("users").find({
       populate: ["avatar"],
@@ -25,6 +28,8 @@ export async function getUsers(params?: any) {
  * Busca todos os autores
  */
 export async function getAuthors(params?: any) {
+  noStore();
+
   try {
     const response = await strapiClient.collection("authors").find({
       populate: ["avatar"],
@@ -45,6 +50,8 @@ export async function getAuthors(params?: any) {
 export async function getUserById(
   documentId: string
 ): Promise<StrapiData<User> | null> {
+  noStore();
+
   try {
     const response = await strapiClient
       .collection("users")
@@ -65,6 +72,8 @@ export async function getUserById(
 export async function getAuthorById(
   documentId: string
 ): Promise<StrapiData<User> | null> {
+  noStore();
+
   try {
     const response = await strapiClient
       .collection("authors")
@@ -85,6 +94,8 @@ export async function getAuthorById(
 export async function getUserByUsername(
   username: string
 ): Promise<StrapiData<User> | null> {
+  noStore();
+
   try {
     const response = await strapiClient.collection("users").find({
       filters: { username: { $eq: username } },
@@ -107,6 +118,8 @@ export async function getUserByUsername(
 export async function getAuthorByName(
   name: string
 ): Promise<StrapiData<User> | null> {
+  noStore();
+
   try {
     const response = await strapiClient.collection("authors").find({
       filters: { name: { $eq: name } },
@@ -129,6 +142,8 @@ export async function getAuthorByName(
 export async function getUserByEmail(
   email: string
 ): Promise<StrapiData<User> | null> {
+  noStore();
+
   try {
     const response = await strapiClient.collection("users").find({
       filters: { email: { $eq: email } },

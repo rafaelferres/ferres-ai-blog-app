@@ -27,7 +27,7 @@ export function ArticleSidebar({
       return imageUrl;
     }
     // Caso contrário, usar a URL do Strapi
-    return `${process.env.NEXT_PUBLIC_STRAPI_URL}${imageUrl}`;
+    return `${imageUrl}`;
   };
 
   return (

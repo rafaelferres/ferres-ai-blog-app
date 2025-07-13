@@ -161,7 +161,7 @@ export function NotificationToggle() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          subscription,
+          subscription: subscription.toJSON(),
           userAgent: navigator.userAgent,
         }),
       });

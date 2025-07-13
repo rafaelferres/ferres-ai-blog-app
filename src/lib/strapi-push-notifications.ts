@@ -78,17 +78,26 @@ class StrapiPushNotificationService {
 
   // Criar uma nova subscription
   async createSubscription(
-    subscription: PushSubscription,
+    subscription: PushSubscription | any,
     userAgent?: string,
     userId?: string
   ): Promise<StrapiPushSubscription> {
     // Extrair dados da subscription
-    const keys = subscription.getKey
-      ? {
-          p256dh: subscription.getKey("p256dh"),
-          auth: subscription.getKey("auth"),
-        }
-      : null;
+    let keys: {
+      p256dh: ArrayBuffer | string;
+      auth: ArrayBuffer | string;
+    } | null = null;
+
+    if (subscription.getKey) {
+      // Se é um objeto PushSubscription real (no frontend)
+      keys = {
+        p256dh: subscription.getKey("p256dh"),
+        auth: subscription.getKey("auth"),
+      };
+    } else if (subscription.keys) {
+      // Se é um objeto JSON serializado (enviado para o servidor)
+      keys = subscription.keys;
+    }
 
     if (!keys?.p256dh || !keys?.auth) {
       throw new Error("Não foi possível extrair as chaves da subscription");
@@ -96,8 +105,14 @@ class StrapiPushNotificationService {
 
     const data: PushSubscriptionData = {
       endpoint: subscription.endpoint,
-      p256dh: this.arrayBufferToBase64(keys.p256dh),
-      auth: this.arrayBufferToBase64(keys.auth),
+      p256dh:
+        typeof keys.p256dh === "string"
+          ? keys.p256dh
+          : this.arrayBufferToBase64(keys.p256dh),
+      auth:
+        typeof keys.auth === "string"
+          ? keys.auth
+          : this.arrayBufferToBase64(keys.auth),
       userAgent,
       subscriptionStatus: "active" as const,
       lastUsed: new Date().toISOString(),

@@ -132,7 +132,7 @@ export default function PushNotificationManager({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ subscription }),
+        body: JSON.stringify({ subscription: subscription.toJSON() }),
       });
 
       const data = await response.json();

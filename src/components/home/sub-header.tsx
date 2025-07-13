@@ -36,7 +36,7 @@ export const SubHeader = async () => {
     return (
       <section className="bg-muted-foreground/5 py-8 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:h-[600px]">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Card Principal - Elon Musk */}
             <div className="lg:col-span-2 relative rounded-lg overflow-hidden shadow-lg bg-card group cursor-pointer h-[200px] lg:h-auto border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group">
               <Link href={`/articles/${articles[0].slug}`}>

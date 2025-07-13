@@ -1,132 +1,214 @@
-import PushNotificationManager from "@/components/push-notification-manager";
-import ResetNotificationButton from "./reset-notification";
-import Link from "next/link";
+"use client";
+
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function TestPushPage() {
-  return (
-    <div className="container mx-auto py-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">
-          🔔 Teste de Push Notifications
-        </h1>
+  const [isSupported, setIsSupported] = useState(false);
+  const [subscription, setSubscription] = useState<PushSubscription | null>(
+    null
+  );
+  const [status, setStatus] = useState<string>("");
 
-        <div className="space-y-6">
-          <div className="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
-            <h2 className="text-xl font-semibold mb-4 text-green-800 dark:text-green-200">
-              ✅ Sistema com Strapi Implementado
-            </h2>
-            <p className="text-green-700 dark:text-green-300 mb-4">
-              O sistema agora usa o Strapi como backend para armazenar
-              subscriptions permanentemente.
-            </p>
-            <ul className="text-sm text-green-600 dark:text-green-400 space-y-1">
-              <li>• Aparece automaticamente após 3 segundos</li>
-              <li>• Dados permanentes no Strapi</li>
-              <li>• Analytics e estatísticas</li>
-              <li>• Segmentação por categorias</li>
-              <li>• Painel admin disponível</li>
-            </ul>
-          </div>
+  useEffect(() => {
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      setIsSupported(true);
 
-          <div className="bg-card p-6 rounded-lg border">
-            <h2 className="text-xl font-semibold mb-4">
-              Componente Manual (Para Testes)
-            </h2>
-            <p className="text-muted-foreground mb-4">
-              Use o componente abaixo apenas para testes manuais:
-            </p>
-            <PushNotificationManager />
-          </div>
-
-          <div className="bg-card p-6 rounded-lg border">
-            <h2 className="text-xl font-semibold mb-4">📋 Como Testar</h2>
-            <ol className="list-decimal list-inside space-y-2 text-sm">
-              <li>Recarregue a página ou abra uma nova aba anônima</li>
-              <li>
-                Aguarde 3 segundos - aparecerá um popup no canto inferior
-                direito
-              </li>
-              <li>
-                Clique em &quot;Sim, quero&quot; para aceitar as notificações
-              </li>
-              <li>Aceite a permissão quando solicitado pelo navegador</li>
-              <li>Abra o console do navegador (F12)</li>
-              <li>Execute o teste manual abaixo</li>
-            </ol>
-          </div>
-
-          <div className="bg-card p-6 rounded-lg border">
-            <h2 className="text-xl font-semibold mb-4">🧪 Teste Manual</h2>
-            <p className="text-muted-foreground mb-4">
-              Cole este código no console do navegador para testar:
-            </p>
-            <pre className="bg-muted p-4 rounded text-sm overflow-x-auto">
-              {`// Teste de webhook simulado
-fetch('/api/webhook/strapi', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer test-token'
-  },
-  body: JSON.stringify({
-    event: 'entry.publish',
-    model: 'article',
-    entry: {
-      id: 1,
-      title: 'Teste de Notificação',
-      slug: 'teste-notificacao',
-      cover: { url: '/og-image.fw.png' }
+      // Check if we already have a subscription
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.pushManager.getSubscription().then((sub) => {
+          setSubscription(sub);
+        });
+      });
     }
-  })
-}).then(res => res.json()).then(console.log);`}
-            </pre>
-          </div>
+  }, []);
 
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-6 rounded-lg border border-yellow-200 dark:border-yellow-800">
-            <h3 className="text-lg font-semibold mb-2 text-yellow-800 dark:text-yellow-200">
-              ⚠️ Importante
-            </h3>
-            <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-              <li>• As notificações só funcionam em HTTPS (ou localhost)</li>
-              <li>• Você precisa configurar as variáveis de ambiente VAPID</li>
-              <li>• O service worker precisa estar ativo</li>
-              <li>• Verifique o console para possíveis erros</li>
-            </ul>
-          </div>
+  const requestPermission = async () => {
+    const permission = await Notification.requestPermission();
+    setStatus(`Permissão: ${permission}`);
+  };
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
-            <h3 className="text-lg font-semibold mb-2 text-blue-800 dark:text-blue-200">
-              🔄 Para Testar Novamente
-            </h3>
-            <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
-              Se já foi perguntado antes, execute no console do navegador:
-            </p>
-            <pre className="bg-blue-100 dark:bg-blue-900/40 p-3 rounded text-sm text-blue-800 dark:text-blue-200">
-              localStorage.removeItem(&quot;push-notification-asked&quot;);
-            </pre>
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
-              Depois recarregue a página e aguarde 3 segundos.
-            </p>
-            <div className="mt-3">
-              <ResetNotificationButton />
-            </div>
-          </div>
+  const subscribe = async () => {
+    try {
+      const registration = await navigator.serviceWorker.ready;
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
-            <h3 className="text-lg font-semibold mb-2 text-blue-800 dark:text-blue-200">
-              📊 Painel Admin
-            </h3>
-            <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
-              Acesse o painel admin para ver estatísticas e gerenciar
-              subscriptions:
-            </p>
-            <Link
-              href="/admin/push-notifications"
-              className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+      // Get VAPID key
+      const vapidResponse = await fetch("/api/push-notifications/vapid-key");
+      const { publicKey } = await vapidResponse.json();
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: publicKey,
+      });
+
+      // Subscribe to notifications
+      await fetch("/api/push-notifications/subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          subscription,
+          userAgent: navigator.userAgent,
+        }),
+      });
+
+      setSubscription(subscription);
+      setStatus("Inscrito com sucesso!");
+    } catch (error) {
+      setStatus(`Erro: ${error}`);
+    }
+  };
+
+  const sendTestNotification = async () => {
+    try {
+      setStatus("Enviando notificação de teste...");
+
+      // Test with custom notification
+      const response = await fetch("/api/webhook/strapi", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${
+            process.env.NEXT_PUBLIC_STRAPI_WEBHOOK_SECRET || "test-secret"
+          }`,
+        },
+        body: JSON.stringify({
+          event: "entry.publish",
+          model: "article",
+          entry: {
+            title: "Artigo de Teste das Notificações!",
+            slug: "teste-notificacao",
+            categories: [{ name: "Tecnologia", slug: "tecnologia" }],
+          },
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setStatus(`Notificação enviada! ${JSON.stringify(result)}`);
+      } else {
+        setStatus(`Erro ao enviar: ${response.status} ${response.statusText}`);
+      }
+    } catch (error) {
+      setStatus(`Erro: ${error}`);
+    }
+  };
+
+  const sendDirectNotification = async () => {
+    try {
+      setStatus("Enviando notificação direta...");
+
+      // Check if service worker is available
+      if ("serviceWorker" in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+
+        // Check if we have an active service worker
+        if (registration.active) {
+          // Create a manual push event
+          const payload = {
+            title: "🔔 Notificação de Teste Direta",
+            body: "Esta é uma notificação de teste enviada diretamente pelo service worker!",
+            icon: "/icon-192x192.fw.png",
+            badge: "/icon-192x192.fw.png",
+            data: {
+              url: "/articles/teste-notificacao",
+              articleTitle: "Artigo de Teste",
+            },
+          };
+
+          // Use the service worker to show notification
+          await registration.showNotification(payload.title, {
+            body: payload.body,
+            icon: payload.icon,
+            badge: payload.badge,
+            data: payload.data,
+            requireInteraction: true,
+          });
+
+          setStatus("Notificação direta enviada com sucesso!");
+        } else {
+          setStatus("Service Worker não está ativo");
+        }
+      } else {
+        setStatus("Service Worker não suportado");
+      }
+    } catch (error) {
+      setStatus(`Erro: ${error}`);
+    }
+  };
+
+  if (!isSupported) {
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">
+          Push Notifications não são suportadas
+        </h1>
+        <p>Seu navegador não suporta Push Notifications.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Teste de Push Notifications</h1>
+
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Status</h2>
+          <p className="text-gray-600">{status}</p>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Permissão</h2>
+          <p>Permissão atual: {Notification.permission}</p>
+          <Button onClick={requestPermission} className="mt-2">
+            Solicitar Permissão
+          </Button>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Inscrição</h2>
+          <p>Status: {subscription ? "Inscrito" : "Não inscrito"}</p>
+          {!subscription && (
+            <Button onClick={subscribe} className="mt-2">
+              Inscrever-se
+            </Button>
+          )}
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Testes</h2>
+          <div className="space-x-2">
+            <Button
+              onClick={sendTestNotification}
+              disabled={!subscription}
+              className="bg-blue-500 hover:bg-blue-600"
             >
-              🔗 Abrir Painel Admin
-            </Link>
+              Enviar Notificação via Webhook
+            </Button>
+            <Button
+              onClick={sendDirectNotification}
+              disabled={Notification.permission !== "granted"}
+              className="bg-green-500 hover:bg-green-600"
+            >
+              Enviar Notificação Direta
+            </Button>
           </div>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Instruções</h2>
+          <ol className="list-decimal list-inside space-y-1 text-sm">
+            <li>Primeiro, solicite permissão para notificações</li>
+            <li>Depois, inscreva-se para receber notificações</li>
+            <li>
+              Teste a notificação direta (deve mostrar conteúdo personalizado)
+            </li>
+            <li>
+              Teste a notificação via webhook (simula uma notificação real)
+            </li>
+          </ol>
         </div>
       </div>
     </div>

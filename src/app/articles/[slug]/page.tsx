@@ -10,6 +10,7 @@ import { Calendar, User, Tag, ArrowLeft } from "lucide-react";
 import { marked } from "marked";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { ArticleSidebar } from "@/components/ui/article-sidebar";
+import { ShareButtons } from "@/components/ui/share-buttons";
 import { processTags } from "@/lib/utils";
 
 // Configurar marked para segurança
@@ -43,6 +44,11 @@ export default async function ArticlePage({
       day: "numeric",
     });
   };
+
+  // Construir a URL completa do artigo
+  const articleUrl = `${
+    process.env.NEXT_PUBLIC_SITE_URL || "https://ferres.io"
+  }/articles/${slug}`;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -81,37 +87,48 @@ export default async function ArticlePage({
               {article.title}
             </h1>
 
-            {/* Meta Information */}
-            <div className="flex flex-wrap items-center gap-6 text-muted-foreground mb-8">
-              {article.author && (
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  <span>{article.author.name}</span>
-                </div>
-              )}
+            {/* Meta Information and Share Buttons */}
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+              <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
+                {article.author && (
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    <span>{article.author.name}</span>
+                  </div>
+                )}
 
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <span>{formatDate(article.createdAt)}</span>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDate(article.createdAt)}</span>
+                </div>
+
+                {(() => {
+                  const tags = processTags(article.tags);
+                  return (
+                    tags.length > 0 && (
+                      <div className="flex items-center gap-2">
+                        <Tag className="w-4 h-4" />
+                        <div className="flex gap-2">
+                          {tags
+                            .slice(0, 3)
+                            .map((tag: string, index: number) => (
+                              <span key={index} className="text-sm">
+                                #{tag}
+                              </span>
+                            ))}
+                        </div>
+                      </div>
+                    )
+                  );
+                })()}
               </div>
 
-              {(() => {
-                const tags = processTags(article.tags);
-                return (
-                  tags.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Tag className="w-4 h-4" />
-                      <div className="flex gap-2">
-                        {tags.slice(0, 3).map((tag: string, index: number) => (
-                          <span key={index} className="text-sm">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                );
-              })()}
+              {/* Share Buttons */}
+              <ShareButtons
+                title={article.title}
+                url={articleUrl}
+                description={article.description || ""}
+              />
             </div>
 
             {/* Featured Image */}
@@ -232,6 +249,11 @@ export default async function ArticlePage({
                 </div>
 
                 <div className="flex gap-2">
+                  <ShareButtons
+                    title={article.title}
+                    url={articleUrl}
+                    description={article.description || ""}
+                  />
                   <Link
                     href="/"
                     className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"

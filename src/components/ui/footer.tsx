@@ -145,7 +145,7 @@ export function Footer({ categories }: FooterProps) {
         <div className="mt-8 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-              <span>© 2024 Ferres. Feito com</span>
+              <span>© 2025 Ferres. Feito com</span>
               <Heart className="w-4 h-4 text-red-500" />
               <span>usando Next.js e Tailwind CSS.</span>
             </div>

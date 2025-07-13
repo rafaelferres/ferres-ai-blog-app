@@ -1,10 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  getArticleByCategory,
-  getArticlePagination,
-  getPopularArticles,
-} from "@/actions/articles";
+import { getArticleByCategory, getPopularArticles } from "@/actions/articles";
 import moment from "moment-timezone";
 import { Calendar, User } from "lucide-react";
 import { SubHeaderClient } from "./sub-header-client";

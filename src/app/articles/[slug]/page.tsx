@@ -1,5 +1,5 @@
 import {
-  getArticleBySlug,
+  getArticleBySlugAddView,
   getRelatedArticles,
   getPopularArticles,
 } from "@/actions/articles";
@@ -24,7 +24,7 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const article = await getArticleBySlugAddView(slug);
 
   if (!article) {
     notFound();

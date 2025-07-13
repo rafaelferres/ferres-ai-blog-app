@@ -139,6 +139,31 @@ export const getArticlesPaginated = async (
   }
 };
 
+export const getArticleBySlugAddView = async (slug: string) => {
+  noStore();
+
+  try {
+    const { data } = await strapiClient.collection("articles").find({
+      filters: { slug: { $eq: slug } },
+      populate: ["cover", "author", "category"],
+    });
+
+    if (!data || data.length === 0) {
+      return null;
+    }
+
+    await strapiClient.collection("articles").update(data[0].documentId, {
+      visit_count: data[0].visit_count + 1,
+      visit_weekly_count: data[0].visit_weekly_count + 1,
+    });
+
+    return data[0];
+  } catch (error) {
+    console.error("Error fetching article by slug:", error);
+    return null;
+  }
+};
+
 export const getArticleBySlug = async (slug: string) => {
   noStore();
 
@@ -258,5 +283,64 @@ export const getRecentArticles = async (limit: number = 5) => {
   } catch (error) {
     console.error("Error fetching recent articles:", error);
     return [];
+  }
+};
+
+export const resetWeeklyVisitCount = async () => {
+  noStore();
+
+  try {
+    // Primeiro, buscar todos os artigos
+    const { data: articles } = await strapiClient.collection("articles").find({
+      fields: ["documentId", "title", "visit_weekly_count"],
+      pagination: {
+        pageSize: 1000, // Usar um número grande para pegar todos
+        page: 1,
+      },
+    });
+
+    console.log(
+      `Iniciando reset do visit_weekly_count para ${articles.length} artigos`
+    );
+
+    // Atualizar cada artigo para zerar o visit_weekly_count
+    const updatePromises = articles.map(async (article: any) => {
+      try {
+        await strapiClient.collection("articles").update(article.documentId, {
+          visit_weekly_count: 0,
+        });
+        console.log(`✓ Reset visit_weekly_count para: ${article.title}`);
+        return { success: true, article: article.title };
+      } catch (error) {
+        console.error(`✗ Erro ao resetar ${article.title}:`, error);
+        return { success: false, article: article.title, error };
+      }
+    });
+
+    // Aguardar todas as atualizações
+    const results = await Promise.all(updatePromises);
+
+    const successCount = results.filter((r) => r.success).length;
+    const errorCount = results.filter((r) => !r.success).length;
+
+    console.log(
+      `✓ Reset concluído: ${successCount} sucessos, ${errorCount} erros`
+    );
+
+    return {
+      success: true,
+      message: `Reset concluído: ${successCount} artigos atualizados, ${errorCount} erros`,
+      totalArticles: articles.length,
+      successCount,
+      errorCount,
+      results,
+    };
+  } catch (error) {
+    console.error("Erro no reset do visit_weekly_count:", error);
+    return {
+      success: false,
+      message: "Erro ao resetar visit_weekly_count",
+      error: error instanceof Error ? error.message : "Erro desconhecido",
+    };
   }
 };

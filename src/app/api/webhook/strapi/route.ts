@@ -18,6 +18,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { event, model, entry } = body;
 
+    console.log("event", JSON.stringify(event, null, 2));
+    console.log("model", JSON.stringify(model, null, 2));
+    console.log("entry", JSON.stringify(entry, null, 2));
+
     // Verificar se é um evento de publicação de artigo
     if (event === "entry.publish" && model === "article") {
       const article = entry;

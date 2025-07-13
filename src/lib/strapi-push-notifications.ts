@@ -201,13 +201,16 @@ class StrapiPushNotificationService {
 
   // Atualizar subscription
   async updateSubscription(
-    id: number,
+    documentId: string,
     data: Partial<PushSubscriptionData>
   ): Promise<StrapiPushSubscription> {
-    const response = await this.makeRequest(`/api/push-subscriptions/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({ data }),
-    });
+    const response = await this.makeRequest(
+      `/api/push-subscriptions/${documentId}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ data }),
+      }
+    );
 
     const result = await response.json();
     return result.data;
@@ -284,7 +287,7 @@ class StrapiPushNotificationService {
 
       // Tentar atualizar lastUsed (não bloquear se falhar)
       try {
-        await this.updateSubscription(subscription.id, {
+        await this.updateSubscription(subscription.documentId, {
           lastUsed: new Date().toISOString(),
         });
         console.log(

@@ -128,6 +128,7 @@ export default async function ArticlePage({
                 title={article.title}
                 url={articleUrl}
                 description={article.description || ""}
+                imageUrl={article.cover?.url}
               />
             </div>
 
@@ -253,6 +254,7 @@ export default async function ArticlePage({
                     title={article.title}
                     url={articleUrl}
                     description={article.description || ""}
+                    imageUrl={article.cover?.url}
                   />
                   <Link
                     href="/"

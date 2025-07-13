@@ -16,6 +16,7 @@ interface ShareButtonsProps {
   title: string;
   url: string;
   description?: string;
+  imageUrl?: string;
 }
 
 // Ícone TikTok personalizado
@@ -25,7 +26,12 @@ const TikTokIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export function ShareButtons({ title, url, description }: ShareButtonsProps) {
+export function ShareButtons({
+  title,
+  url,
+  description,
+  imageUrl,
+}: ShareButtonsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { showToast, ToastContainer } = useToast();
 
@@ -72,23 +78,54 @@ export function ShareButtons({ title, url, description }: ShareButtonsProps) {
     setIsOpen(false);
   };
 
-  const handleInstagramShare = () => {
+  const handleInstagramShare = async () => {
     const text = `${shareData.title}\n\n${shareData.url}`;
+
+    // Tentar usar Web Share API se disponível e houver imagem
+    if (navigator.share && imageUrl) {
+      try {
+        // Primeiro, tentar fazer fetch da imagem se for uma URL completa
+        let imageFile;
+        if (imageUrl.startsWith("http")) {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          imageFile = new File([blob], "image.jpg", { type: blob.type });
+        }
+
+        await navigator.share({
+          title: shareData.title,
+          text: shareData.description || "",
+          url: shareData.url,
+          files: imageFile ? [imageFile] : undefined,
+        });
+        setIsOpen(false);
+        return;
+      } catch {
+        console.log("Web Share API falhou, usando fallback");
+      }
+    }
 
     // Tentar abrir o app do Instagram em mobile
     if (
       navigator.userAgent.match(/Android/i) ||
       navigator.userAgent.match(/iPhone/i)
     ) {
-      // Deep link para Instagram (só funciona se o app estiver instalado)
-      window.location.href = `instagram://story-camera`;
+      // Deep link para Instagram Stories com parâmetros
+      if (imageUrl) {
+        // Tentar abrir Instagram Stories com imagem
+        window.location.href = `instagram://story-camera?media=${encodeURIComponent(
+          imageUrl
+        )}&caption=${encodeURIComponent(text)}`;
+      } else {
+        window.location.href = `instagram://story-camera`;
+      }
 
       // Fallback: copiar link após um delay
       setTimeout(() => {
         if (navigator.clipboard) {
           navigator.clipboard.writeText(text);
           showToast(
-            "Link copiado! Cole no Instagram para compartilhar.",
+            "Abrindo Instagram... Se não funcionar, o link foi copiado para colar no story!",
             "success"
           );
         }
@@ -102,27 +139,60 @@ export function ShareButtons({ title, url, description }: ShareButtonsProps) {
           "success"
         );
       }
+      // Tentar abrir Instagram web
+      window.open("https://www.instagram.com/", "_blank");
     }
     setIsOpen(false);
   };
 
-  const handleTikTokShare = () => {
+  const handleTikTokShare = async () => {
     const text = `${shareData.title}\n\n${shareData.url}`;
+
+    // Tentar usar Web Share API se disponível e houver imagem
+    if (navigator.share && imageUrl) {
+      try {
+        // Primeiro, tentar fazer fetch da imagem se for uma URL completa
+        let imageFile;
+        if (imageUrl.startsWith("http")) {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          imageFile = new File([blob], "image.jpg", { type: blob.type });
+        }
+
+        await navigator.share({
+          title: shareData.title,
+          text: shareData.description || "",
+          url: shareData.url,
+          files: imageFile ? [imageFile] : undefined,
+        });
+        setIsOpen(false);
+        return;
+      } catch {
+        console.log("Web Share API falhou, usando fallback");
+      }
+    }
 
     // Tentar abrir o app do TikTok em mobile
     if (
       navigator.userAgent.match(/Android/i) ||
       navigator.userAgent.match(/iPhone/i)
     ) {
-      // Deep link para TikTok (só funciona se o app estiver instalado)
-      window.location.href = `tiktok://`;
+      // Deep link para TikTok com parâmetros
+      if (imageUrl) {
+        // Tentar abrir TikTok com imagem
+        window.location.href = `tiktok://upload?media=${encodeURIComponent(
+          imageUrl
+        )}&caption=${encodeURIComponent(text)}`;
+      } else {
+        window.location.href = `tiktok://`;
+      }
 
       // Fallback: copiar link após um delay
       setTimeout(() => {
         if (navigator.clipboard) {
           navigator.clipboard.writeText(text);
           showToast(
-            "Link copiado! Cole no TikTok para compartilhar.",
+            "Abrindo TikTok... Se não funcionar, o link foi copiado para colar no vídeo!",
             "success"
           );
         }
@@ -133,6 +203,8 @@ export function ShareButtons({ title, url, description }: ShareButtonsProps) {
         navigator.clipboard.writeText(text);
         showToast("Link copiado! Cole no TikTok para compartilhar.", "success");
       }
+      // Tentar abrir TikTok web
+      window.open("https://www.tiktok.com/", "_blank");
     }
     setIsOpen(false);
   };

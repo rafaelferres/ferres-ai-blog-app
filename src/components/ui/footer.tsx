@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Category } from "@/types/strapi";
 import { useToast } from "./toast";
-import { NotificationToggle } from "./notification-toggle";
 
 interface FooterProps {
   categories: Category[];
@@ -135,9 +134,6 @@ export function Footer({ categories }: FooterProps) {
               </div>
 
               <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                {/* Botão de Notificações */}
-                <NotificationToggle />
-
                 {/* Links */}
                 <div className="flex items-center space-x-6">
                   <a

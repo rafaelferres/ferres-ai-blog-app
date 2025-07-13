@@ -282,12 +282,23 @@ class StrapiPushNotificationService {
 
       await webpush.sendNotification(pushSubscription, payload);
 
-      // Atualizar lastUsed
-      await this.updateSubscription(subscription.id, {
-        lastUsed: new Date().toISOString(),
-      });
+      // Tentar atualizar lastUsed (não bloquear se falhar)
+      try {
+        await this.updateSubscription(subscription.id, {
+          lastUsed: new Date().toISOString(),
+        });
+        console.log(
+          `✅ Notificação enviada e subscription atualizada: ${subscription.endpoint}`
+        );
+      } catch (updateError) {
+        console.warn(
+          `⚠️ Notificação enviada, mas falha ao atualizar subscription: ${
+            (updateError as Error).message
+          }`
+        );
+        console.log(`✅ Notificação enviada para: ${subscription.endpoint}`);
+      }
 
-      console.log(`✅ Notificação enviada para: ${subscription.endpoint}`);
       return true;
     } catch (error) {
       console.error("Erro ao enviar notificação:", error);

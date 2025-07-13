@@ -134,6 +134,48 @@ export default function TestPushPage() {
     }
   };
 
+  const checkDebugInfo = async () => {
+    try {
+      setStatus("Verificando informações de debug...");
+
+      const response = await fetch("/api/debug-notifications");
+      const result = await response.json();
+
+      if (response.ok) {
+        setStatus(`Debug: ${JSON.stringify(result.debug, null, 2)}`);
+      } else {
+        setStatus(`Erro no debug: ${result.message}`);
+      }
+    } catch (error) {
+      setStatus(`Erro: ${error}`);
+    }
+  };
+
+  const forceServiceWorkerUpdate = async () => {
+    try {
+      setStatus("Forçando atualização do service worker...");
+
+      if ("serviceWorker" in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+
+        // Force update
+        await registration.update();
+
+        // Check if there's a waiting service worker
+        if (registration.waiting) {
+          registration.waiting.postMessage({ type: "SKIP_WAITING" });
+          setStatus("Service worker atualizado! Recarregue a página.");
+        } else {
+          setStatus("Service worker já está atualizado.");
+        }
+      } else {
+        setStatus("Service Worker não suportado");
+      }
+    } catch (error) {
+      setStatus(`Erro: ${error}`);
+    }
+  };
+
   if (!isSupported) {
     return (
       <div className="container mx-auto p-4">
@@ -190,6 +232,18 @@ export default function TestPushPage() {
             >
               Enviar Notificação Direta
             </Button>
+            <Button
+              onClick={checkDebugInfo}
+              className="bg-purple-500 hover:bg-purple-600"
+            >
+              Verificar Debug
+            </Button>
+            <Button
+              onClick={forceServiceWorkerUpdate}
+              className="bg-yellow-500 hover:bg-yellow-600"
+            >
+              Atualizar Service Worker
+            </Button>
           </div>
         </div>
 
@@ -206,6 +260,14 @@ export default function TestPushPage() {
             <li>
               Se ainda aparecer notificação genérica, faça hard refresh
               (Ctrl+Shift+R)
+            </li>
+            <li>
+              Clique em &quot;Verificar Debug&quot; para ver se as subscriptions
+              estão sendo salvas
+            </li>
+            <li>
+              Se não funcionar, clique em &quot;Atualizar Service Worker&quot; e
+              recarregue a página
             </li>
           </ol>
         </div>

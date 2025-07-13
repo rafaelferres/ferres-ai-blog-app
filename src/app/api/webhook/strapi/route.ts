@@ -1,79 +1,61 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendPushNotification } from "@/lib/push-notifications";
+import { notifyNewArticle } from "@/lib/strapi-push-notifications";
 
 export async function POST(request: NextRequest) {
   try {
-    // Verificar se a requisição tem o token de autorização correto
+    // Verificar se o webhook tem o header de autorização correto
     const authHeader = request.headers.get("authorization");
     const webhookSecret = process.env.STRAPI_WEBHOOK_SECRET;
 
-    if (!webhookSecret) {
-      console.error("STRAPI_WEBHOOK_SECRET não está definido");
-      return NextResponse.json(
-        { error: "Configuração do servidor incorreta" },
-        { status: 500 }
-      );
-    }
-
-    if (!authHeader || authHeader !== `Bearer ${webhookSecret}`) {
-      console.error("Token de autorização inválido para webhook");
+    if (
+      !authHeader ||
+      !webhookSecret ||
+      authHeader !== `Bearer ${webhookSecret}`
+    ) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    // Parsear o corpo da requisição
     const body = await request.json();
-
-    console.log("📡 Webhook recebido do Strapi:", {
-      event: body.event,
-      model: body.model,
-      entry: body.entry?.title || body.entry?.id,
-    });
+    const { event, model, entry } = body;
 
     // Verificar se é um evento de publicação de artigo
-    if (body.event === "entry.publish" && body.model === "article") {
-      const article = body.entry;
+    if (event === "entry.publish" && model === "article") {
+      const article = entry;
 
-      // Preparar dados da notificação
-      const notificationData = {
-        title: `📰 Novo artigo publicado!`,
-        body: `${article.title} - Confira agora no blog!`,
-        icon: "/icon-192x192.fw.png",
-        badge: "/icon-192x192.fw.png",
-        image: article.cover?.url || "/og-image.fw.png",
-        tag: "new-article",
-        data: {
-          url: `/articles/${article.slug}`,
-          articleId: article.id,
-          timestamp: new Date().toISOString(),
+      // Extrair informações do artigo
+      const title = article.title || "Novo artigo";
+      const slug = article.slug || "";
+      const categories =
+        article.categories?.map((cat: any) => cat.name || cat.slug) || [];
+
+      // Enviar notificação
+      await notifyNewArticle(title, slug, categories);
+
+      return NextResponse.json({
+        success: true,
+        message: "Notificação enviada com sucesso",
+        article: {
+          title,
+          slug,
+          categories,
         },
-      };
-
-      // Enviar push notification
-      try {
-        const result = await sendPushNotification(notificationData);
-        console.log("✅ Push notification enviada com sucesso:", result);
-      } catch (error) {
-        console.error("❌ Erro ao enviar push notification:", error);
-        // Não falhar o webhook por causa do erro de push notification
-      }
+        timestamp: new Date().toISOString(),
+      });
     }
 
-    // Responder com sucesso
+    // Outros eventos podem ser tratados aqui
     return NextResponse.json({
       success: true,
-      message: "Webhook processado com sucesso",
-      timestamp: new Date().toISOString(),
-      event: body.event,
-      processed: body.event === "entry.publish" && body.model === "article",
+      message: "Webhook recebido, mas nenhuma ação foi executada",
+      event,
+      model,
     });
   } catch (error) {
-    console.error("❌ Erro no webhook do Strapi:", error);
+    console.error("Erro no webhook:", error);
     return NextResponse.json(
       {
-        success: false,
-        message: "Erro ao processar webhook",
-        error: error instanceof Error ? error.message : "Erro desconhecido",
-        timestamp: new Date().toISOString(),
+        error: "Erro interno do servidor",
+        message: error instanceof Error ? error.message : "Erro desconhecido",
       },
       { status: 500 }
     );

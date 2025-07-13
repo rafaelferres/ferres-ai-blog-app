@@ -10,5 +10,12 @@ VAPID_SUBJECT=mailto:your-email@example.com
 # Webhook Security - Gere um token seguro
 STRAPI_WEBHOOK_SECRET=your_webhook_secret_here
 
-# Strapi Configuration (se ainda não tiver)
-NEXT_PUBLIC_STRAPI_URL=http://localhost:1337 
+# Strapi Configuration (obrigatório para a collection)
+NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
+
+# Cron Secret (para limpeza automática e admin)
+CRON_SECRET=your_cron_secret_here
+
+# Admin Environment (opcional para testing)
+NEXT_PUBLIC_CRON_SECRET=your_cron_secret_here
+NEXT_PUBLIC_STRAPI_WEBHOOK_SECRET=your_webhook_secret_here 

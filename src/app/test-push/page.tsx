@@ -1,5 +1,6 @@
 import PushNotificationManager from "@/components/push-notification-manager";
 import ResetNotificationButton from "./reset-notification";
+import Link from "next/link";
 
 export default function TestPushPage() {
   return (
@@ -12,17 +13,18 @@ export default function TestPushPage() {
         <div className="space-y-6">
           <div className="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
             <h2 className="text-xl font-semibold mb-4 text-green-800 dark:text-green-200">
-              ✅ Notificações Automáticas Ativadas
+              ✅ Sistema com Strapi Implementado
             </h2>
             <p className="text-green-700 dark:text-green-300 mb-4">
-              O sistema agora pergunta automaticamente se o usuário quer receber
-              notificações quando entra no site pela primeira vez.
+              O sistema agora usa o Strapi como backend para armazenar
+              subscriptions permanentemente.
             </p>
             <ul className="text-sm text-green-600 dark:text-green-400 space-y-1">
               <li>• Aparece automaticamente após 3 segundos</li>
-              <li>• Só pergunta uma vez por usuário</li>
-              <li>• Aparece no canto inferior direito</li>
-              <li>• Não é intrusivo</li>
+              <li>• Dados permanentes no Strapi</li>
+              <li>• Analytics e estatísticas</li>
+              <li>• Segmentação por categorias</li>
+              <li>• Painel admin disponível</li>
             </ul>
           </div>
 
@@ -108,6 +110,22 @@ fetch('/api/webhook/strapi', {
             <div className="mt-3">
               <ResetNotificationButton />
             </div>
+          </div>
+
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+            <h3 className="text-lg font-semibold mb-2 text-blue-800 dark:text-blue-200">
+              📊 Painel Admin
+            </h3>
+            <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
+              Acesse o painel admin para ver estatísticas e gerenciar
+              subscriptions:
+            </p>
+            <Link
+              href="/admin/push-notifications"
+              className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              🔗 Abrir Painel Admin
+            </Link>
           </div>
         </div>
       </div>

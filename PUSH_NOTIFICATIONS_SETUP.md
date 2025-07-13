@@ -129,6 +129,12 @@ curl -X GET https://your-domain.com/api/push-notifications/vapid-key
 - **Remover**: `POST /api/push-notifications/unsubscribe`
 - **VAPID Key**: `GET /api/push-notifications/vapid-key`
 
+### Analytics e Admin
+
+- **Estatísticas**: `GET /api/push-notifications/stats`
+- **Limpeza**: `POST /api/push-notifications/cleanup` (requer auth)
+- **Painel Admin**: `/admin/push-notifications`
+
 ## 🔒 Segurança
 
 - ✅ **Autenticação**: Webhook protegido com token Bearer
@@ -138,13 +144,27 @@ curl -X GET https://your-domain.com/api/push-notifications/vapid-key
 
 ## 📊 Armazenamento
 
-**Importante**: Atualmente, as subscriptions são armazenadas na memória do servidor. Para produção, você deve implementar um banco de dados permanente.
+**✅ IMPLEMENTADO**: As subscriptions agora são armazenadas permanentemente no Strapi!
 
-Para migrar para um banco de dados real:
+### Collection `push-subscription` no Strapi:
 
-1. Substitua o array `subscriptions` no arquivo `src/lib/push-notifications.ts`
-2. Implemente as funções de CRUD usando seu banco de dados preferido
-3. Adicione índices para performance em `endpoint` e `createdAt`
+- **endpoint** - URL única da subscription
+- **p256dh** - Chave pública para criptografia
+- **auth** - Token de autenticação
+- **status** - active/inactive/invalid
+- **userAgent** - Informações do navegador
+- **lastUsed** - Última utilização
+- **userId** - ID do usuário (opcional)
+- **preferences** - Preferências de notificação (JSON)
+- **metadata** - Metadados extras (JSON)
+
+### Recursos Avançados:
+
+- ✅ **Segmentação por categorias**
+- ✅ **Analytics e estatísticas**
+- ✅ **Limpeza automática de subscriptions inválidas**
+- ✅ **Tracking de uso e metadados**
+- ✅ **Painel admin em `/admin/push-notifications`**
 
 ## 🐛 Troubleshooting
 
@@ -166,15 +186,16 @@ Para migrar para um banco de dados real:
 2. Certifique-se de que não há espaços extras nas variáveis
 3. Teste a key pública via API
 
-## 📝 Próximos Passos
+## 📝 Próximos Passos (Opcionais)
 
-Para melhorar o sistema:
+Funcionalidades extras que podem ser implementadas:
 
-1. **Banco de dados**: Migrar subscriptions para banco permanente
-2. **Segmentação**: Permitir subscriptions por categorias
-3. **Analytics**: Rastrear taxa de abertura das notificações
-4. **Personalização**: Permitir customização das notificações
-5. **Queue**: Implementar sistema de filas para alta concorrência
+1. **Integração de usuários**: Conectar com sistema de autenticação
+2. **A/B Testing**: Testar diferentes tipos de notificação
+3. **Agendamento**: Notificações programadas
+4. **Templates**: Templates personalizados por categoria
+5. **Rate limiting**: Controle de frequência por usuário
+6. **PWA avançado**: Notificações offline
 
 ## 🤝 Contribuição
 

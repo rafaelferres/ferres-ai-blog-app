@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { removeSubscription } from "@/lib/push-notifications";
+import { strapiPushService } from "@/lib/strapi-push-notifications";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,29 +13,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Remover a subscription
-    const removed = removeSubscription(endpoint);
+    const removed = await strapiPushService.removeSubscription(endpoint);
 
-    if (removed) {
-      console.log("✅ Subscription removida:", endpoint);
-      return NextResponse.json({
-        success: true,
-        message: "Subscription removida com sucesso",
-        timestamp: new Date().toISOString(),
-      });
-    } else {
+    if (!removed) {
       return NextResponse.json(
         { error: "Subscription não encontrada" },
         { status: 404 }
       );
     }
+
+    return NextResponse.json({
+      success: true,
+      message: "Subscription removida com sucesso",
+    });
   } catch (error) {
-    console.error("❌ Erro ao remover subscription:", error);
+    console.error("Erro ao remover subscription:", error);
     return NextResponse.json(
       {
-        success: false,
-        message: "Erro ao remover subscription",
-        error: error instanceof Error ? error.message : "Erro desconhecido",
+        error: "Erro interno do servidor",
+        message: error instanceof Error ? error.message : "Erro desconhecido",
       },
       { status: 500 }
     );

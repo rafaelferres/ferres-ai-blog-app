@@ -1,42 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveSubscription, PushSubscription } from "@/lib/push-notifications";
+import { strapiPushService } from "@/lib/strapi-push-notifications";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { subscription } = body;
+    const { subscription, userAgent, userId } = body;
 
-    if (!subscription || !subscription.endpoint || !subscription.keys) {
+    if (!subscription || !subscription.endpoint) {
       return NextResponse.json(
-        { error: "Subscription inválida" },
+        { error: "Dados de subscription inválidos" },
         { status: 400 }
       );
     }
 
-    // Obter User-Agent para identificar o dispositivo
-    const userAgent = request.headers.get("user-agent") || "Unknown";
+    // Verificar se já existe uma subscription com este endpoint
+    const existingSubscription =
+      await strapiPushService.findSubscriptionByEndpoint(subscription.endpoint);
 
-    // Salvar a subscription
-    const savedSubscription = saveSubscription(
-      subscription as PushSubscription,
-      userAgent
-    );
-
-    console.log("✅ Nova subscription salva:", savedSubscription.id);
+    let result;
+    if (existingSubscription) {
+      // Atualizar subscription existente
+      result = await strapiPushService.updateSubscription(
+        existingSubscription.id,
+        {
+          userAgent,
+          userId,
+          subscriptionStatus: "active",
+          lastUsed: new Date().toISOString(),
+        }
+      );
+    } else {
+      // Criar nova subscription
+      result = await strapiPushService.createSubscription(
+        subscription,
+        userAgent,
+        userId
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      message: "Subscription criada com sucesso",
-      subscriptionId: savedSubscription.id,
-      timestamp: new Date().toISOString(),
+      data: result,
+      message: existingSubscription
+        ? "Subscription atualizada"
+        : "Subscription criada",
     });
   } catch (error) {
-    console.error("❌ Erro ao criar subscription:", error);
+    console.error("Erro ao salvar subscription:", error);
     return NextResponse.json(
       {
-        success: false,
-        message: "Erro ao criar subscription",
-        error: error instanceof Error ? error.message : "Erro desconhecido",
+        error: "Erro interno do servidor",
+        message: error instanceof Error ? error.message : "Erro desconhecido",
       },
       { status: 500 }
     );

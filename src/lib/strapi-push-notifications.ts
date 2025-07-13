@@ -146,7 +146,7 @@ class StrapiPushNotificationService {
   // Buscar todas as subscriptions ativas
   async getActiveSubscriptions(): Promise<StrapiPushSubscription[]> {
     const response = await this.makeRequest(
-      "/push-subscriptions?filters[subscriptionStatus][$eq]=active&pagination[limit]=1000"
+      "/api/push-subscriptions?filters[subscriptionStatus][$eq]=active&pagination[limit]=1000"
     );
 
     const result: StrapiResponse<StrapiPushSubscription[]> =
@@ -160,11 +160,11 @@ class StrapiPushNotificationService {
   ): Promise<StrapiPushSubscription[]> {
     // Buscar por allArticles=true OU que tenham as categorias específicas
     const allArticlesResponse = await this.makeRequest(
-      "/push-subscriptions?filters[subscriptionStatus][$eq]=active&filters[preferences][allArticles][$eq]=true&pagination[limit]=1000"
+      "/api/push-subscriptions?filters[subscriptionStatus][$eq]=active&filters[preferences][allArticles][$eq]=true&pagination[limit]=1000"
     );
 
     const categoryResponse = await this.makeRequest(
-      `/push-subscriptions?filters[subscriptionStatus][$eq]=active&filters[preferences][categories][$in]=${categories.join(
+      `/api/push-subscriptions?filters[subscriptionStatus][$eq]=active&filters[preferences][categories][$in]=${categories.join(
         ","
       )}&pagination[limit]=1000`
     );
@@ -357,7 +357,7 @@ class StrapiPushNotificationService {
     try {
       // Buscar subscriptions inválidas ou antigas
       const response = await this.makeRequest(
-        `/push-subscriptions?filters[$or][0][subscriptionStatus][$eq]=invalid&filters[$or][1][lastUsed][$lt]=${thirtyDaysAgo.toISOString()}&pagination[limit]=1000`
+        `/api/push-subscriptions?filters[$or][0][subscriptionStatus][$eq]=invalid&filters[$or][1][lastUsed][$lt]=${thirtyDaysAgo.toISOString()}&pagination[limit]=1000`
       );
 
       const result: StrapiResponse<StrapiPushSubscription[]> =
@@ -405,13 +405,13 @@ class StrapiPushNotificationService {
     const [activeResponse, inactiveResponse, invalidResponse] =
       await Promise.all([
         this.makeRequest(
-          "/push-subscriptions?filters[subscriptionStatus][$eq]=active&pagination[limit]=0"
+          "/api/push-subscriptions?filters[subscriptionStatus][$eq]=active&pagination[limit]=0"
         ),
         this.makeRequest(
-          "/push-subscriptions?filters[subscriptionStatus][$eq]=inactive&pagination[limit]=0"
+          "/api/push-subscriptions?filters[subscriptionStatus][$eq]=inactive&pagination[limit]=0"
         ),
         this.makeRequest(
-          "/push-subscriptions?filters[subscriptionStatus][$eq]=invalid&pagination[limit]=0"
+          "/api/push-subscriptions?filters[subscriptionStatus][$eq]=invalid&pagination[limit]=0"
         ),
       ]);
 

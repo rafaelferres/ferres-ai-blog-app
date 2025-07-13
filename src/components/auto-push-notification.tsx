@@ -24,7 +24,7 @@ export default function AutoPushNotification() {
 
     // Verificar se já foi perguntado antes
     const hasAsked = localStorage.getItem("push-notification-asked");
-    if (hasAsked) return;
+    if (hasAsked === "true") return;
 
     // Verificar se já tem permissão
     if (Notification.permission === "granted") {

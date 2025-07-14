@@ -6,7 +6,7 @@ import { NavbarSpacer } from "@/components/ui/navbar-spacer";
 import { Footer } from "@/components/ui/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getCategories } from "@/actions/categories";
-import { GoogleTagManager } from "@next/third-parties/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import SendPulseNotification from "@/components/sendpulse-notification";
 
 const geistSans = Geist({
@@ -96,7 +96,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <GoogleTagManager gtmId="G-58EP4LQ7LC" />
+        <GoogleAnalytics gaId="G-58EP4LQ7LC" />
         <ThemeProvider>
           <Header />
           <NavbarSpacer>{children}</NavbarSpacer>

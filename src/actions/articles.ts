@@ -9,6 +9,7 @@ export async function getArticles() {
   try {
     const { data } = await strapiClient.collection("articles").find({
       populate: ["cover", "author", "category"],
+      sort: ["createdAt:desc"],
     });
 
     return data;

@@ -25,7 +25,10 @@ export function HeaderClient({ categories }: HeaderClientProps) {
         description: category.description,
       })),
     },
-
+    {
+      title: "Media JSON Generator",
+      href: "/media-json-gen",
+    },
     {
       title: "Comunidade",
       href: "/community",

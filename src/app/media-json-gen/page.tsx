@@ -7,7 +7,6 @@ import {
   Download,
   Copy,
   Trash2,
-  Plus,
   Settings,
   Palette,
   Sparkles,
@@ -26,8 +25,6 @@ interface PromptField {
 export default function MediaJsonGenPage() {
   const [promptType, setPromptType] = useState("image");
   const [aiModel, setAiModel] = useState("runway-gen-4");
-  const [promptName, setPromptName] = useState("");
-  const [promptDescription, setPromptDescription] = useState("");
   const [fields, setFields] = useState<PromptField[]>([]);
   const [jsonOutput, setJsonOutput] = useState("");
   const [showJson, setShowJson] = useState(false);
@@ -323,17 +320,6 @@ export default function MediaJsonGenPage() {
     setShowJson(false);
   }, [promptType]);
 
-  const addField = () => {
-    const newField: PromptField = {
-      id: Date.now().toString(),
-      type: "text",
-      label: "",
-      value: "",
-      required: false,
-    };
-    setFields([...fields, newField]);
-  };
-
   const updateField = (id: string, updates: Partial<PromptField>) => {
     setFields(
       fields.map((field) =>
@@ -409,8 +395,6 @@ export default function MediaJsonGenPage() {
   };
 
   const clearForm = () => {
-    setPromptName("");
-    setPromptDescription("");
     setFields(loadDefaultFields());
     setJsonOutput("");
     setShowJson(false);

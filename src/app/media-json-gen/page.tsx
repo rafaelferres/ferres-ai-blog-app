@@ -497,34 +497,6 @@ export default function MediaJsonGenPage() {
                     ))}
                   </select>
                 </div>
-
-                {/* Prompt Name */}
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Nome do Prompt
-                  </label>
-                  <input
-                    type="text"
-                    value={promptName}
-                    onChange={(e) => setPromptName(e.target.value)}
-                    placeholder="Digite o nome do seu prompt"
-                    className="w-full p-3 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
-                </div>
-
-                {/* Prompt Description */}
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Descrição
-                  </label>
-                  <textarea
-                    value={promptDescription}
-                    onChange={(e) => setPromptDescription(e.target.value)}
-                    placeholder="Descreva o que este prompt faz"
-                    rows={3}
-                    className="w-full p-3 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
-                </div>
               </div>
             </div>
 
@@ -535,10 +507,6 @@ export default function MediaJsonGenPage() {
                   <Sparkles className="w-6 h-6" />
                   Campos do Prompt
                 </h2>
-                <Button onClick={addField} size="sm">
-                  <Plus className="w-4 h-4" />
-                  Adicionar Campo
-                </Button>
               </div>
 
               <div className="space-y-6">
